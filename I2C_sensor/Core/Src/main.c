@@ -123,12 +123,12 @@ int main(void)
 	 	  	        float gy = mpu_data.Gyro_Y / 131.0f;
 	 	  	        float gz = mpu_data.Gyro_Z / 131.0f;
 
-	 	  	        int len = snprintf(uart_buf, sizeof(uart_buf),
-	 	  	                           "Accel [g]: X=% 2f Y=% 2f Z=%2f | Gyro [°/s]: X=%\2f Y=%\2f Z=%\2f\r\n",
-	 	  	                           ax, ay, az, gx, gy, gz);
+	 	  	     int len = snprintf(uart_buf, sizeof(uart_buf),
+	 	  	               "Accel [g]: X=%.2f Y=%.2f Z=%.2f | Gyro [°/s]: X=%.2f Y=%.2f Z=%.2f\r\n",
+	 	  	               ax, ay, az, gx, gy, gz);
 
 
-	 	  	        HAL_UART_Transmit(&huart2, (uint8_t)uart_buf,len, HAL_MAX_DELAY);
+	 	  	        HAL_UART_Transmit(&huart2, (uint8_t*)uart_buf,len, HAL_MAX_DELAY);
 	 	  	      }
 
 	 	  	      HAL_Delay(200);
