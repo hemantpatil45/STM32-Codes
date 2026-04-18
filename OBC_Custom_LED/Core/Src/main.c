@@ -682,6 +682,7 @@ void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
 }
 
 
+
 void HAL_UART_R9xCpltCallback(UART_HandleTypeDef *huart) {
    if (huart->Instance == USART1) {
 	   HAL_UART_Transmit_DMA(&huart6, FPGA_Byte, 1);

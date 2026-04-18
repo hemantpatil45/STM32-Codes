@@ -39,13 +39,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_line   0001ab38  00000000  00000000  00030e9d  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_str    000a50e3  00000000  00000000  0004b9d5  2**0
+ 18 .debug_str    000a511e  00000000  00000000  0004b9d5  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .comment      00000043  00000000  00000000  000f0ab8  2**0
+ 19 .comment      00000043  00000000  00000000  000f0af3  2**0
                   CONTENTS, READONLY
- 20 .debug_frame  00006b54  00000000  00000000  000f0afc  2**2
+ 20 .debug_frame  00006b54  00000000  00000000  000f0b38  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 00000090  00000000  00000000  000f7650  2**0
+ 21 .debug_line_str 00000090  00000000  00000000  000f768c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -5831,15 +5831,22 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  800239a:	4770      	bx	lr
 
 0800239c <__NVIC_SetPriorityGrouping>:
+           In case of a conflict between priority grouping and available
+           priority bits (__NVIC_PRIO_BITS), the smallest possible priority group is set.
+  \param [in]      PriorityGroup  Priority grouping field.
+ */
+__STATIC_INLINE void __NVIC_SetPriorityGrouping(uint32_t PriorityGroup)
 {
  800239c:	b480      	push	{r7}
  800239e:	b085      	sub	sp, #20
  80023a0:	af00      	add	r7, sp, #0
  80023a2:	6078      	str	r0, [r7, #4]
+  uint32_t reg_value;
   uint32_t PriorityGroupTmp = (PriorityGroup & (uint32_t)0x07UL);             /* only values 0..7 are used          */
  80023a4:	687b      	ldr	r3, [r7, #4]
  80023a6:	f003 0307 	and.w	r3, r3, #7
  80023aa:	60fb      	str	r3, [r7, #12]
+
   reg_value  =  SCB->AIRCR;                                                   /* read old register configuration    */
  80023ac:	4b0c      	ldr	r3, [pc, #48]	@ (80023e0 <__NVIC_SetPriorityGrouping+0x44>)
  80023ae:	68db      	ldr	r3, [r3, #12]
@@ -5849,6 +5856,8 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  80023b4:	f64f 03ff 	movw	r3, #63743	@ 0xf8ff
  80023b8:	4013      	ands	r3, r2
  80023ba:	60bb      	str	r3, [r7, #8]
+  reg_value  =  (reg_value                                   |
+                ((uint32_t)0x5FAUL << SCB_AIRCR_VECTKEY_Pos) |
                 (PriorityGroupTmp << SCB_AIRCR_PRIGROUP_Pos)  );              /* Insert write key and priority group */
  80023bc:	68fb      	ldr	r3, [r7, #12]
  80023be:	021a      	lsls	r2, r3, #8
@@ -5872,6 +5881,11 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  80023e0:	e000ed00 	.word	0xe000ed00
 
 080023e4 <__NVIC_GetPriorityGrouping>:
+  \brief   Get Priority Grouping
+  \details Reads the priority grouping field from the NVIC Interrupt Controller.
+  \return                Priority grouping field (SCB->AIRCR [10:8] PRIGROUP field).
+ */
+__STATIC_INLINE uint32_t __NVIC_GetPriorityGrouping(void)
 {
  80023e4:	b480      	push	{r7}
  80023e6:	af00      	add	r7, sp, #0
@@ -5888,6 +5902,11 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  80023fc:	e000ed00 	.word	0xe000ed00
 
 08002400 <__NVIC_EnableIRQ>:
+  \details Enables a device specific interrupt in the NVIC interrupt controller.
+  \param [in]      IRQn  Device specific interrupt number.
+  \note    IRQn must not be negative.
+ */
+__STATIC_INLINE void __NVIC_EnableIRQ(IRQn_Type IRQn)
 {
  8002400:	b480      	push	{r7}
  8002402:	b083      	sub	sp, #12
@@ -5898,6 +5917,8 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  800240a:	f997 3007 	ldrsb.w	r3, [r7, #7]
  800240e:	2b00      	cmp	r3, #0
  8002410:	db0b      	blt.n	800242a <__NVIC_EnableIRQ+0x2a>
+  {
+    __COMPILER_BARRIER();
     NVIC->ISER[(((uint32_t)IRQn) >> 5UL)] = (uint32_t)(1UL << (((uint32_t)IRQn) & 0x1FUL));
  8002412:	79fb      	ldrb	r3, [r7, #7]
  8002414:	f003 021f 	and.w	r2, r3, #31
@@ -5907,6 +5928,8 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  8002420:	2001      	movs	r0, #1
  8002422:	fa00 f202 	lsl.w	r2, r0, r2
  8002426:	f841 2023 	str.w	r2, [r1, r3, lsl #2]
+    __COMPILER_BARRIER();
+  }
 }
  800242a:	bf00      	nop
  800242c:	370c      	adds	r7, #12
@@ -5917,6 +5940,11 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  8002438:	e000e100 	.word	0xe000e100
 
 0800243c <__NVIC_SetPriority>:
+  \param [in]      IRQn  Interrupt number.
+  \param [in]  priority  Priority to set.
+  \note    The priority cannot be set for every processor exception.
+ */
+__STATIC_INLINE void __NVIC_SetPriority(IRQn_Type IRQn, uint32_t priority)
 {
  800243c:	b480      	push	{r7}
  800243e:	b083      	sub	sp, #12
@@ -5928,6 +5956,7 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  8002448:	f997 3007 	ldrsb.w	r3, [r7, #7]
  800244c:	2b00      	cmp	r3, #0
  800244e:	db0a      	blt.n	8002466 <__NVIC_SetPriority+0x2a>
+  {
     NVIC->IP[((uint32_t)IRQn)]               = (uint8_t)((priority << (8U - __NVIC_PRIO_BITS)) & (uint32_t)0xFFUL);
  8002450:	683b      	ldr	r3, [r7, #0]
  8002452:	b2da      	uxtb	r2, r3
@@ -5937,6 +5966,11 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  800245c:	b2d2      	uxtb	r2, r2
  800245e:	440b      	add	r3, r1
  8002460:	f883 2300 	strb.w	r2, [r3, #768]	@ 0x300
+  }
+  else
+  {
+    SCB->SHP[(((uint32_t)IRQn) & 0xFUL)-4UL] = (uint8_t)((priority << (8U - __NVIC_PRIO_BITS)) & (uint32_t)0xFFUL);
+  }
 }
  8002464:	e00a      	b.n	800247c <__NVIC_SetPriority+0x40>
     SCB->SHP[(((uint32_t)IRQn) & 0xFUL)-4UL] = (uint8_t)((priority << (8U - __NVIC_PRIO_BITS)) & (uint32_t)0xFFUL);
@@ -5960,6 +5994,11 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  800248c:	e000ed00 	.word	0xe000ed00
 
 08002490 <NVIC_EncodePriority>:
+  \param [in]   PreemptPriority  Preemptive priority value (starting from 0).
+  \param [in]       SubPriority  Subpriority value (starting from 0).
+  \return                        Encoded priority. Value can be used in the function \ref NVIC_SetPriority().
+ */
+__STATIC_INLINE uint32_t NVIC_EncodePriority (uint32_t PriorityGroup, uint32_t PreemptPriority, uint32_t SubPriority)
 {
  8002490:	b480      	push	{r7}
  8002492:	b089      	sub	sp, #36	@ 0x24
@@ -5971,6 +6010,9 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  800249c:	68fb      	ldr	r3, [r7, #12]
  800249e:	f003 0307 	and.w	r3, r3, #7
  80024a2:	61fb      	str	r3, [r7, #28]
+  uint32_t PreemptPriorityBits;
+  uint32_t SubPriorityBits;
+
   PreemptPriorityBits = ((7UL - PriorityGroupTmp) > (uint32_t)(__NVIC_PRIO_BITS)) ? (uint32_t)(__NVIC_PRIO_BITS) : (uint32_t)(7UL - PriorityGroupTmp);
  80024a4:	69fb      	ldr	r3, [r7, #28]
  80024a6:	f1c3 0307 	rsb	r3, r3, #7
@@ -5988,6 +6030,8 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  80024be:	e000      	b.n	80024c2 <NVIC_EncodePriority+0x32>
  80024c0:	2300      	movs	r3, #0
  80024c2:	617b      	str	r3, [r7, #20]
+
+  return (
            ((PreemptPriority & (uint32_t)((1UL << (PreemptPriorityBits)) - 1UL)) << SubPriorityBits) |
  80024c4:	f04f 32ff 	mov.w	r2, #4294967295
  80024c8:	69bb      	ldr	r3, [r7, #24]
@@ -6006,6 +6050,7 @@ __weak void HAL_ADCEx_InjectedConvCpltCallback(ADC_HandleTypeDef *hadc)
  80024e6:	400b      	ands	r3, r1
            ((PreemptPriority & (uint32_t)((1UL << (PreemptPriorityBits)) - 1UL)) << SubPriorityBits) |
  80024e8:	4313      	orrs	r3, r2
+         );
 }
  80024ea:	4618      	mov	r0, r3
  80024ec:	3724      	adds	r7, #36	@ 0x24
@@ -8222,6 +8267,11 @@ static void FLASH_Program_DoubleWord(uint32_t Address, uint64_t Data)
  8003018:	68fb      	ldr	r3, [r7, #12]
  800301a:	683a      	ldr	r2, [r7, #0]
  800301c:	601a      	str	r2, [r3, #0]
+           so that all instructions following the ISB are fetched from cache or memory,
+           after the instruction has been completed.
+ */
+__STATIC_FORCEINLINE void __ISB(void)
+{
   __ASM volatile ("isb 0xF":::"memory");
  800301e:	f3bf 8f6f 	isb	sy
 }

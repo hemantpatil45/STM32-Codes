@@ -66,8 +66,8 @@ all: main-build
 main-build: OBC_Custom_LED1.elf secondary-outputs
 
 # Tool invocations
-OBC_Custom_LED1.elf OBC_Custom_LED1.map: $(OBJS) $(USER_OBJS) E:\New\ folder\OneDrive\ -\ Savitribai\ Phule\ Pune\ University\Desktop\workspace_1.16.1\OBC_Custom_LED1\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "OBC_Custom_LED1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"E:\New folder\OneDrive - Savitribai Phule Pune University\Desktop\workspace_1.16.1\OBC_Custom_LED1\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="OBC_Custom_LED1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+OBC_Custom_LED1.elf OBC_Custom_LED1.map: $(OBJS) $(USER_OBJS) C:\Users\HEMANT\ PATIL\git\STM32-Codes\OBC_Custom_LED1\STM32F401RETX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "OBC_Custom_LED1.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\HEMANT PATIL\git\STM32-Codes\OBC_Custom_LED1\STM32F401RETX_FLASH.ld" --specs=nosys.specs -Wl,-Map="OBC_Custom_LED1.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
