@@ -1,0 +1,199 @@
+[23:39:39.250] ADC:3861 voltage:3.11 V | magnetic field not detected
+[23:39:39.756] ADC:3861 voltage:3.11 V | magnetic field not detected
+[23:39:40.261] ADC:3869 voltage:3.12 V | magnetic field not detected
+[23:39:40.765] ADC:3863 voltage:3.11 V | magnetic field not detected
+[23:39:41.270] ADC:3866 voltage:3.12 V | magnetic field not detected
+[23:39:41.775] ADC:3862 voltage:3.11 V | magnetic field not detected
+[23:39:42.281] ADC:3867 voltage:3.12 V | magnetic field not detected
+[23:39:42.785] ADC:3865 voltage:3.11 V | magnetic field not detected
+[23:39:43.290] ADC:3865 voltage:3.11 V | magnetic field not detected
+[23:39:43.794] ADC:3861 voltage:3.11 V | magnetic field not detected
+[23:39:44.300] ADC:3867 voltage:3.12 V | magnetic field not detected
+[23:39:44.805] ADC:3846 voltage:3.10 V | magnetic field not detected
+[23:39:45.310] ADC:3837 voltage:3.09 V | magnetic field not detected
+[23:39:45.815] ADC:3842 voltage:3.10 V | magnetic field not detected
+[23:39:46.320] ADC:3837 voltage:3.09 V | magnetic field not detected
+[23:39:46.825] ADC:3825 voltage:3.08 V | magnetic field not detected
+[23:39:47.330] ADC:3794 voltage:3.06 V | magnetic field not detected
+[23:39:47.835] ADC:3845 voltage:3.10 V | magnetic field not detected
+[23:39:48.339] ADC:3877 voltage:3.12 V | magnetic field not detected
+[23:39:48.845] ADC:3879 voltage:3.13 V | magnetic field not detected
+[23:39:49.350] ADC:3877 voltage:3.12 V | magnetic field not detected
+[23:39:49.854] ADC:3882 voltage:3.13 V | magnetic field not detected
+[23:39:50.360] ADC:3886 voltage:3.13 V | magnetic field not detected
+[23:39:50.864] ADC:3885 voltage:3.13 V | magnetic field not detected
+[23:39:51.369] ADC:3886 voltage:3.13 V | magnetic field not detected
+[23:39:51.874] ADC:3886 voltage:3.13 V | magnetic field not detected
+[23:39:52.380] ADC:3891 voltage:3.14 V | magnetic field not detected
+[23:39:52.884] ADC:3891 voltage:3.14 V | magnetic field not detected
+[23:39:53.389] ADC:3894 voltage:3.14 V | magnetic field not detected
+[23:39:53.894] ADC:3894 voltage:3.14 V | magnetic field not detected
+[23:39:54.400] ADC:3896 voltage:3.14 V | magnetic field not detected
+[23:39:54.904] ADC:3889 voltage:3.13 V | magnetic field not detected
+[23:39:55.409] ADC:3894 voltage:3.14 V | magnetic field not detected
+[23:39:55.913] ADC:3893 voltage:3.14 V | magnetic field not detected
+[23:39:56.419] ADC:3896 voltage:3.14 V | magnetic field not detected
+[23:39:56.924] ADC:3895 voltage:3.14 V | magnetic field not detected
+[23:39:57.428] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:39:57.934] ADC:3895 voltage:3.14 V | magnetic field not detected
+[23:39:58.438] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:39:58.944] ADC:3804 voltage:3.07 V | magnetic field not detected
+[23:39:59.448] ADC:3809 voltage:3.07 V | magnetic field not detected
+[23:39:59.953] ADC:3837 voltage:3.09 V | magnetic field not detected
+[23:40:00.459] ADC:3881 voltage:3.13 V | magnetic field not detected
+[23:40:00.964] ADC:3849 voltage:3.10 V | magnetic field not detected
+[23:40:01.469] ADC:3837 voltage:3.09 V | magnetic field not detected
+[23:40:01.973] ADC:3876 voltage:3.12 V | magnetic field not detected
+[23:40:02.478] ADC:3818 voltage:3.08 V | magnetic field not detected
+[23:40:02.982] ADC:3801 voltage:3.06 V | magnetic field not detected
+[23:40:03.489] ADC:3839 voltage:3.09 V | magnetic field not detected
+[23:40:03.993] ADC:3773 voltage:3.04 V | magnetic field not detected
+[23:40:04.497] ADC:3809 voltage:3.07 V | magnetic field not detected
+[23:40:05.003] ADC:3805 voltage:3.07 V | magnetic field not detected
+[23:40:05.507] ADC:3792 voltage:3.06 V | magnetic field not detected
+[23:40:06.018] ADC:3799 voltage:3.06 V | magnetic field not detected
+[23:40:06.518] ADC:3808 voltage:3.07 V | magnetic field not detected
+[23:40:07.022] ADC:3854 voltage:3.11 V | magnetic field not detected
+[23:40:07.527] ADC:3799 voltage:3.06 V | magnetic field not detected
+[23:40:08.033] ADC:3775 voltage:3.04 V | magnetic field not detected
+[23:40:08.537] ADC:3780 voltage:3.05 V | magnetic field not detected
+[23:40:09.042] ADC:3741 voltage:3.01 V | magnetic field not detected
+[23:40:09.548] ADC:3787 voltage:3.05 V | magnetic field not detected
+[23:40:10.053] ADC:3815 voltage:3.07 V | magnetic field not detected
+[23:40:10.558] ADC:3770 voltage:3.04 V | magnetic field not detected
+[23:40:11.062] ADC:3735 voltage:3.01 V | magnetic field not detected
+[23:40:11.568] ADC:3801 voltage:3.06 V | magnetic field not detected
+[23:40:12.072] ADC:3804 voltage:3.07 V | magnetic field not detected
+[23:40:12.577] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:13.082] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:13.587] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:14.092] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:14.597] ADC:3728 voltage:3.00 V | magnetic field not detected
+[23:40:15.102] ADC:3769 voltage:3.04 V | magnetic field not detected
+[23:40:15.607] ADC:3760 voltage:3.03 V | magnetic field not detected
+[23:40:16.111] ADC:3746 voltage:3.02 V | magnetic field not detected
+[23:40:16.616] ADC:3748 voltage:3.02 V | magnetic field not detected
+[23:40:17.121] ADC:3754 voltage:3.03 V | magnetic field not detected
+[23:40:17.626] ADC:3754 voltage:3.03 V | magnetic field not detected
+[23:40:18.131] ADC:3757 voltage:3.03 V | magnetic field not detected
+[23:40:18.637] ADC:3765 voltage:3.03 V | magnetic field not detected
+[23:40:19.141] ADC:3759 voltage:3.03 V | magnetic field not detected
+[23:40:19.647] ADC:3761 voltage:3.03 V | magnetic field not detected
+[23:40:20.152] ADC:3762 voltage:3.03 V | magnetic field not detected
+[23:40:20.657] ADC:3767 voltage:3.04 V | magnetic field not detected
+[23:40:21.162] ADC:3754 voltage:3.03 V | magnetic field not detected
+[23:40:21.667] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:22.170] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:22.675] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:23.182] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:23.685] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:24.191] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:24.696] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:25.200] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:25.706] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:26.210] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:26.716] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:40:27.221] ADC:3760 voltage:3.03 V | magnetic field not detected
+[23:40:27.725] ADC:3791 voltage:3.06 V | magnetic field not detected
+[23:40:28.230] ADC:3803 voltage:3.06 V | magnetic field not detected
+[23:40:28.736] ADC:3806 voltage:3.07 V | magnetic field not detected
+[23:40:29.240] ADC:3807 voltage:3.07 V | magnetic field not detected
+[23:40:29.746] ADC:3801 voltage:3.06 V | magnetic field not detected
+[23:40:30.250] ADC:3792 voltage:3.06 V | magnetic field not detected
+[23:40:30.755] ADC:3794 voltage:3.06 V | magnetic field not detected
+[23:40:35.805] dx{|||~|ADC:3796 voltage:3.06 V | magnetic field not detected
+[23:40:36.317] ADC:3796 voltage:3.06 V | magnetic field not detected
+[23:40:36.815] ADC:3797 voltage:3.06 V | magnetic field not detected
+[23:40:37.320] ADC:3796 voltage:3.06 V | magnetic field not detected
+[23:40:37.824] ADC:3800 voltage:3.06 V | magnetic field not detected
+[23:40:38.330] ADC:3798 voltage:3.06 V | magnetic field not detected
+[23:40:38.835] ADC:3791 voltage:3.06 V | magnetic field not detected
+[23:40:39.339] ADC:3793 voltage:3.06 V | magnetic field not detected
+[23:40:39.845] ADC:3797 voltage:3.06 V | magnetic field not detected
+[23:40:40.353] ADC:3800 voltage:3.06 V | magnetic field not detected
+[23:40:40.854] ADC:3801 voltage:3.06 V | magnetic field not detected
+[23:40:41.360] ADC:3801 voltage:3.06 V | magnetic field not detected
+[23:40:41.865] ADC:3801 voltage:3.06 V | magnetic field not detected
+[23:40:42.369] ADC:3797 voltage:3.06 V | magnetic field not detected
+[23:40:42.874] ADC:3804 voltage:3.07 V | magnetic field not detected
+[23:40:43.379] ADC:3800 voltage:3.06 V | magnetic field not detected
+[23:40:43.884] ADC:3794 voltage:3.06 V | magnetic field not detected
+[23:40:44.388] ADC:3801 voltage:3.06 V | magnetic field not detected
+[23:40:44.893] ADC:3903 voltage:3.15 V | magnetic field not detected
+[23:40:45.399] ADC:3901 voltage:3.14 V | magnetic field not detected
+[23:40:45.904] ADC:3898 voltage:3.14 V | magnetic field not detected
+[23:40:46.408] ADC:3901 voltage:3.14 V | magnetic field not detected
+[23:40:46.913] ADC:3901 voltage:3.14 V | magnetic field not detected
+[23:40:47.419] ADC:3906 voltage:3.15 V | magnetic field not detected
+[23:40:47.924] ADC:3897 voltage:3.14 V | magnetic field not detected
+[23:40:48.429] ADC:3896 voltage:3.14 V | magnetic field not detected
+[23:40:48.934] ADC:3895 voltage:3.14 V | magnetic field not detected
+[23:40:49.439] ADC:3897 voltage:3.14 V | magnetic field not detected
+[23:40:49.943] ADC:3902 voltage:3.14 V | magnetic field not detected
+[23:40:50.449] ADC:3903 voltage:3.15 V | magnetic field not detected
+[23:40:50.953] ADC:3901 voltage:3.14 V | magnetic field not detected
+[23:40:51.458] ADC:3900 voltage:3.14 V | magnetic field not detected
+[23:40:51.963] ADC:3902 voltage:3.14 V | magnetic field not detected
+[23:40:52.468] ADC:3905 voltage:3.15 V | magnetic field not detected
+[23:40:52.973] ADC:3901 voltage:3.14 V | magnetic field not detected
+[23:40:53.478] ADC:3900 voltage:3.14 V | magnetic field not detected
+[23:40:53.983] ADC:3905 voltage:3.15 V | magnetic field not detected
+[23:40:54.488] ADC:3900 voltage:3.14 V | magnetic field not detected
+[23:40:54.993] ADC:3902 voltage:3.14 V | magnetic field not detected
+[23:40:55.498] ADC:3903 voltage:3.15 V | magnetic field not detected
+[23:40:56.003] ADC:3900 voltage:3.14 V | magnetic field not detected
+[23:40:56.508] ADC:3901 voltage:3.14 V | magnetic field not detected
+[23:40:57.012] ADC:3900 voltage:3.14 V | magnetic field not detected
+[23:40:57.517] ADC:3901 voltage:3.14 V | magnetic field not detected
+[23:40:58.023] ADC:3904 voltage:3.15 V | magnetic field not detected
+[23:40:58.527] ADC:3906 voltage:3.15 V | magnetic field not detected
+[23:40:59.032] ADC:3902 voltage:3.14 V | magnetic field not detected
+[23:40:59.537] ADC:3905 voltage:3.15 V | magnetic field not detected
+[23:41:00.044] ADC:3847 voltage:3.10 V | magnetic field not detected
+[23:41:00.547] ADC:3889 voltage:3.13 V | magnetic field not detected
+[23:41:01.053] ADC:3907 voltage:3.15 V | magnetic field not detected
+[23:41:01.557] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:02.061] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:02.566] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:03.071] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:03.577] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:04.081] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:04.586] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:05.092] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:05.596] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:06.102] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:06.607] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:07.111] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:07.616] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:08.121] ADC:0 voltage:0.00 V | magnetic field   detected
+[23:41:08.626] ADC:3898 voltage:3.14 V | magnetic field not detected
+[23:41:09.132] ADC:3900 voltage:3.14 V | magnetic field not detected
+[23:41:09.637] ADC:3886 voltage:3.13 V | magnetic field not detected
+[23:41:10.141] ADC:3891 voltage:3.14 V | magnetic field not detected
+[23:41:10.648] ADC:3899 voltage:3.14 V | magnetic field not detected
+[23:41:11.152] ADC:3895 voltage:3.14 V | magnetic field not detected
+[23:41:11.656] ADC:3883 voltage:3.13 V | magnetic field not detected
+[23:41:12.161] ADC:3896 voltage:3.14 V | magnetic field not detected
+[23:41:12.666] ADC:3885 voltage:3.13 V | magnetic field not detected
+[23:41:13.171] ADC:3890 voltage:3.13 V | magnetic field not detected
+[23:41:13.676] ADC:3893 voltage:3.14 V | magnetic field not detected
+[23:41:14.182] ADC:3887 voltage:3.13 V | magnetic field not detected
+[23:41:14.686] ADC:3894 voltage:3.14 V | magnetic field not detected
+[23:41:15.190] ADC:3882 voltage:3.13 V | magnetic field not detected
+[23:41:15.696] ADC:3888 voltage:3.13 V | magnetic field not detected
+[23:41:16.200] ADC:3884 voltage:3.13 V | magnetic field not detected
+[23:41:16.705] ADC:3887 voltage:3.13 V | magnetic field not detected
+[23:41:17.210] ADC:3882 voltage:3.13 V | magnetic field not detected
+[23:41:17.716] ADC:3880 voltage:3.13 V | magnetic field not detected
+[23:41:18.220] ADC:3875 voltage:3.12 V | magnetic field not detected
+[23:41:18.726] ADC:3881 voltage:3.13 V | magnetic field not detected
+[23:41:19.230] ADC:3874 voltage:3.12 V | magnetic field not detected
+[23:41:19.736] ADC:3880 voltage:3.13 V | magnetic field not detected
+[23:41:20.240] ADC:3882 voltage:3.13 V | magnetic field not detected
+[23:41:20.745] ADC:3879 voltage:3.13 V | magnetic field not detected
+[23:41:21.250] ADC:3883 voltage:3.13 V | magnetic field not detected
+[23:41:21.756] ADC:3880 voltage:3.13 V | magnetic field not detected
+[23:41:22.260] ADC:3879 voltage:3.13 V | magnetic field not detected
+[23:41:22.764] ADC:3888 voltage:3.13 V | magnetic field not detected
+[23:41:23.271] ADC:3872 voltage:3.12 V | magnetic field not detected
+[23:41:23.775] ADC:3871 voltage:3.12 V | magnetic field not detected
