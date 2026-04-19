@@ -102,8 +102,9 @@ int main(void)
   MX_ADC1_Init();
   MX_USART2_UART_Init();
   MX_I2C1_Init();
-  /* USER CODE BEGIN 2 */
 
+  /* USER CODE BEGIN 2 */
+  MPU6050_Init(&hi2c1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -113,7 +114,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  if (MPU6050_Read_All(&hi2c1, &mpu_data) ){
+	  if (MPU6050_Read_All(&hi2c1, &mpu_data)==0 ){
 	 	  	        // Convert raw data to physical units
 	 	  	        float ax = mpu_data.Accel_X / 16384.0f;
 	 	  	        float ay = mpu_data.Accel_Y / 16384.0f;

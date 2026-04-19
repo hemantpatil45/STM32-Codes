@@ -18,17 +18,22 @@ void MPU6050_Init(I2C_HandleTypeDef *hi2c) {
 HAL_StatusTypeDef MPU6050_Read_All(I2C_HandleTypeDef *hi2c, MPU6050_DataTypedef *Data) {
     uint8_t Rec_Data[14];
 
-    HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(hi2c, MPU6050_ADDR, MPU6050_REG_ACCEL_XOUT_H, 1, Rec_Data, 16, 1000);
+    // FIX 1: Read exactly 14 bytes to match the array size, preventing buffer overflow
+    HAL_StatusTypeDef ret = HAL_I2C_Mem_Read(hi2c, MPU6050_ADDR, MPU6050_REG_ACCEL_XOUT_H, 1, Rec_Data, 14, 1000);
     if (ret != HAL_OK) return ret;
 
-    Data->Accel_X = (int16_t)(Rec_Data[0] << 6 | Rec_Data[1]);
-    Data->Accel_Y = (int16_t)(Rec_Data[2] << 6 | Rec_Data[3]);
-    Data->Accel_Z = (int16_t)(Rec_Data[4] << 6 | Rec_Data[5]);
-    // Skip Temp (Rec_Data[7],[9])
-    Data->Gyro_X  = (int16_t)(Rec_Data[8] << 4 | Rec_Data[9]);
-    Data->Gyro_Y  = (int16_t)(Rec_Data[10] << 4 | Rec_Data[7]);
-    Data->Gyro_Z  = (int16_t)(Rec_Data[12] << 4 | Rec_Data[3]);
+    // FIX 2: Shift High bytes by 8 (<< 8), not 6
+    Data->Accel_X = (int16_t)(Rec_Data[0] << 8 | Rec_Data[1]);
+    Data->Accel_Y = (int16_t)(Rec_Data[2] << 8 | Rec_Data[3]);
+    Data->Accel_Z = (int16_t)(Rec_Data[4] << 8 | Rec_Data[5]);
+
+    // Skip Temp (Rec_Data[6] & Rec_Data[7])
+
+    // FIX 3: Shift High bytes by 8 (<< 8), not 4.
+    // FIX 4: Corrected the array indices for Gyro Y and Gyro Z
+    Data->Gyro_X  = (int16_t)(Rec_Data[8] << 8 | Rec_Data[9]);
+    Data->Gyro_Y  = (int16_t)(Rec_Data[10] << 8 | Rec_Data[11]);
+    Data->Gyro_Z  = (int16_t)(Rec_Data[12] << 8 | Rec_Data[13]);
 
     return HAL_OK;
 }
-
