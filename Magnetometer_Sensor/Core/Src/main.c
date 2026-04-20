@@ -21,7 +21,6 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "main.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -65,8 +64,6 @@ void HMC5883L_Read(int16_t *mx, int16_t *my, int16_t *mz);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-int16_t mx, my, mz;
-char uart_buf[64];
 
 void HMC5883L_Init(void) {
     uint8_t configA[2] = {0x00, 0x70};
@@ -122,10 +119,9 @@ int main(void)
   MX_GPIO_Init();
   MX_I2C1_Init();
   MX_USART1_UART_Init();
+
   /* USER CODE BEGIN 2 */
   HMC5883L_Init();
-  char uart_buf[50];
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -134,9 +130,9 @@ int main(void)
   {
     /* USER CODE END WHILE */
 	  HMC5883L_Read(&mx, &my, &mz);
-		         snprintf(uart_buf, sizeof(uart_buf), "X: %d Y: %d Z: %d\r\n", mx, my, mz);
-		         HAL_UART_Transmit(&huart1, (uint8_t*)uart_buf, strlen(uart_buf), HAL_MAX_DELAY);
-		         HAL_Delay(500);
+      snprintf(uart_buf, sizeof(uart_buf), "X: %d Y: %d Z: %d\r\n", mx, my, mz);
+      HAL_UART_Transmit(&huart1, (uint8_t*)uart_buf, strlen(uart_buf), HAL_MAX_DELAY);
+      HAL_Delay(500);
     /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
@@ -290,7 +286,7 @@ void Error_Handler(void)
 #ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
-  *         where the assert_param error has occurred.
+  * where the assert_param error has occurred.
   * @param  file: pointer to the source file name
   * @param  line: assert_param error line source number
   * @retval None
