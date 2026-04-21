@@ -18,6 +18,7 @@
 /* USER CODE END Header */
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
+#include "hmc5883l.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -28,7 +29,6 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define HMC5883L_ADDR  (0x1E << 1)
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -58,34 +58,13 @@ static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
-void HMC5883L_Init(void);
-void HMC5883L_Read(int16_t *mx, int16_t *my, int16_t *mz);
+
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
 
-void HMC5883L_Init(void) {
-    uint8_t configA[2] = {0x00, 0x70};
-    uint8_t configB[2] = {0x01, 0xA0};
-    uint8_t mode[2]    = {0x02, 0x00};
 
-    HAL_I2C_Master_Transmit(&hi2c1, HMC5883L_ADDR, configA, 2, HAL_MAX_DELAY);
-    HAL_I2C_Master_Transmit(&hi2c1, HMC5883L_ADDR, configB, 2, HAL_MAX_DELAY);
-    HAL_I2C_Master_Transmit(&hi2c1, HMC5883L_ADDR, mode, 2, HAL_MAX_DELAY);
-}
-
-void HMC5883L_Read(int16_t *mx, int16_t *my, int16_t *mz) {
-    uint8_t data[6];
-    uint8_t reg = 0x03;
-
-    HAL_I2C_Master_Transmit(&hi2c1, HMC5883L_ADDR, &reg, 1, HAL_MAX_DELAY);
-    HAL_I2C_Master_Receive(&hi2c1, HMC5883L_ADDR, data, 6, HAL_MAX_DELAY);
-
-    *mx = (int16_t)(data[0] << 8 | data[1]);
-    *mz = (int16_t)(data[2] << 8 | data[3]);
-    *my = (int16_t)(data[4] << 8 | data[5]);
-}
 /* USER CODE END 0 */
 
 /**
@@ -121,7 +100,7 @@ int main(void)
   MX_USART1_UART_Init();
 
   /* USER CODE BEGIN 2 */
-  HMC5883L_Init();
+  HMC5883L_Init(&hi2c1);
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -129,7 +108,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
-	  HMC5883L_Read(&mx, &my, &mz);
+	  HMC5883L_Read(&hi2c1, &mx, &my, &mz);
       snprintf(uart_buf, sizeof(uart_buf), "X: %d Y: %d Z: %d\r\n", mx, my, mz);
       HAL_UART_Transmit(&huart1, (uint8_t*)uart_buf, strlen(uart_buf), HAL_MAX_DELAY);
       HAL_Delay(500);
