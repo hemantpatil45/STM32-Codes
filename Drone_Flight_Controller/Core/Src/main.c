@@ -22,6 +22,62 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <string.h>
+
+// Global structure to hold all sensor data
+typedef struct {
+    // MPU6050 Data
+    int16_t accel_x, accel_y, accel_z;
+    int16_t gyro_x, gyro_y, gyro_z;
+
+    // HMC5883L Data
+    int16_t mag_x, mag_y, mag_z;
+
+    // Hall Effect Sensor Data
+    uint32_t hall_value;
+
+    // GPS Data
+    float latitude;
+    float longitude;
+} DroneSensorData_t;
+// Instantiate the structure
+DroneSensorData_t drone_data = {0};
+/* USER CODE BEGIN PV */
+float kalman_angle = 0.0f;
+float kalman_bias = 0.0f;
+float P[2][2] = {{0, 0}, {0, 0}};
+
+float updateKalman(float newAngle, float newRate, float dt) {
+    // Prediction
+    float rate = newRate - kalman_bias;
+    kalman_angle += dt * rate;
+
+    P[0][0] += dt * (dt * P[1][1] - P[0][1] - P[1][0] + 0.001f);
+    P[0][1] -= dt * P[1][1];
+    P[1][0] -= dt * P[1][1];
+    P[1][1] += 0.003f * dt;
+
+    // Measurement Update
+    float S = P[0][0] + 0.03f;
+    float K[2] = {P[0][0] / S, P[1][0] / S};
+
+    float y = newAngle - kalman_angle;
+    kalman_angle += K[0] * y;
+    kalman_bias += K[1] * y;
+
+    P[0][0] -= K[0] * P[0][0];
+    P[0][1] -= K[0] * P[0][1];
+    P[1][0] -= K[1] * P[0][0];
+    P[1][1] -= K[1] * P[0][1];
+
+    return kalman_angle;
+}
+/* USER CODE END PV */
+
+// I2C Addresses (Shifted left by 1 for HAL)
+#define MPU6050_ADDR (0x68 << 1)
+#define HMC5883L_ADDR (0x1E << 1)
 
 /* USER CODE END Includes */
 
@@ -45,41 +101,43 @@ ADC_HandleTypeDef hadc1;
 
 I2C_HandleTypeDef hi2c1;
 
-UART_HandleTypeDef huart1;
+TIM_HandleTypeDef htim3;
+
+UART_HandleTypeDef huart2;
 
 /* Definitions for contole */
 osThreadId_t contoleHandle;
 const osThreadAttr_t contole_attributes = {
   .name = "contole",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for sensor_read */
 osThreadId_t sensor_readHandle;
 const osThreadAttr_t sensor_read_attributes = {
   .name = "sensor_read",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityRealtime,
 };
 /* Definitions for senosr_fusion */
 osThreadId_t senosr_fusionHandle;
 const osThreadAttr_t senosr_fusion_attributes = {
   .name = "senosr_fusion",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityAboveNormal,
 };
 /* Definitions for motoroutput */
 osThreadId_t motoroutputHandle;
 const osThreadAttr_t motoroutput_attributes = {
   .name = "motoroutput",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityAboveNormal,
 };
 /* Definitions for communication */
 osThreadId_t communicationHandle;
 const osThreadAttr_t communication_attributes = {
   .name = "communication",
-  .stack_size = 128 * 4,
+  .stack_size = 512 * 4,
   .priority = (osPriority_t) osPriorityNormal1,
 };
 /* Definitions for GPS */
@@ -88,6 +146,11 @@ const osThreadAttr_t GPS_attributes = {
   .name = "GPS",
   .stack_size = 128 * 4,
   .priority = (osPriority_t) osPriorityLow4,
+};
+/* Definitions for sensorData */
+osMessageQueueId_t sensorDataHandle;
+const osMessageQueueAttr_t sensorData_attributes = {
+  .name = "sensorData"
 };
 /* USER CODE BEGIN PV */
 
@@ -98,7 +161,8 @@ void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_ADC1_Init(void);
 static void MX_I2C1_Init(void);
-static void MX_USART1_UART_Init(void);
+static void MX_USART2_UART_Init(void);
+static void MX_TIM3_Init(void);
 void StartDefaultTask(void *argument);
 void StartTask02(void *argument);
 void StartTask03(void *argument);
@@ -146,8 +210,12 @@ int main(void)
   MX_GPIO_Init();
   MX_ADC1_Init();
   MX_I2C1_Init();
-  MX_USART1_UART_Init();
+  MX_USART2_UART_Init();
+  MX_TIM3_Init();
   /* USER CODE BEGIN 2 */
+  char debug_msg[] = "DEBUG: UART Transmission is working perfectly!\r\n";
+  HAL_UART_Transmit(&huart2, (uint8_t*)debug_msg, strlen(debug_msg), HAL_MAX_DELAY);
+
 
   /* USER CODE END 2 */
 
@@ -165,6 +233,10 @@ int main(void)
   /* USER CODE BEGIN RTOS_TIMERS */
   /* start timers, add new ones, ... */
   /* USER CODE END RTOS_TIMERS */
+
+  /* Create the queue(s) */
+  /* creation of sensorData */
+  sensorDataHandle = osMessageQueueNew (30, sizeof(float), &sensorData_attributes);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -355,35 +427,106 @@ static void MX_I2C1_Init(void)
 }
 
 /**
-  * @brief USART1 Initialization Function
+  * @brief TIM3 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_USART1_UART_Init(void)
+static void MX_TIM3_Init(void)
 {
 
-  /* USER CODE BEGIN USART1_Init 0 */
+  /* USER CODE BEGIN TIM3_Init 0 */
 
-  /* USER CODE END USART1_Init 0 */
+  /* USER CODE END TIM3_Init 0 */
 
-  /* USER CODE BEGIN USART1_Init 1 */
+  TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+  TIM_MasterConfigTypeDef sMasterConfig = {0};
+  TIM_OC_InitTypeDef sConfigOC = {0};
 
-  /* USER CODE END USART1_Init 1 */
-  huart1.Instance = USART1;
-  huart1.Init.BaudRate = 115200;
-  huart1.Init.WordLength = UART_WORDLENGTH_8B;
-  huart1.Init.StopBits = UART_STOPBITS_1;
-  huart1.Init.Parity = UART_PARITY_NONE;
-  huart1.Init.Mode = UART_MODE_TX_RX;
-  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
-  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
-  if (HAL_UART_Init(&huart1) != HAL_OK)
+  /* USER CODE BEGIN TIM3_Init 1 */
+
+  /* USER CODE END TIM3_Init 1 */
+  htim3.Instance = TIM3;
+  htim3.Init.Prescaler = 83;
+  htim3.Init.CounterMode = TIM_COUNTERMODE_UP;
+  htim3.Init.Period = 2499;
+  htim3.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+  htim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+  if (HAL_TIM_Base_Init(&htim3) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN USART1_Init 2 */
+  sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+  if (HAL_TIM_ConfigClockSource(&htim3, &sClockSourceConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_Init(&htim3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+  sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+  if (HAL_TIMEx_MasterConfigSynchronization(&htim3, &sMasterConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  sConfigOC.OCMode = TIM_OCMODE_PWM1;
+  sConfigOC.Pulse = 0;
+  sConfigOC.OCPolarity = TIM_OCPOLARITY_HIGH;
+  sConfigOC.OCFastMode = TIM_OCFAST_DISABLE;
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_3) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  if (HAL_TIM_PWM_ConfigChannel(&htim3, &sConfigOC, TIM_CHANNEL_4) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN TIM3_Init 2 */
 
-  /* USER CODE END USART1_Init 2 */
+  /* USER CODE END TIM3_Init 2 */
+  HAL_TIM_MspPostInit(&htim3);
+
+}
+
+/**
+  * @brief USART2 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_USART2_UART_Init(void)
+{
+
+  /* USER CODE BEGIN USART2_Init 0 */
+
+  /* USER CODE END USART2_Init 0 */
+
+  /* USER CODE BEGIN USART2_Init 1 */
+
+  /* USER CODE END USART2_Init 1 */
+  huart2.Instance = USART2;
+  huart2.Init.BaudRate = 115200;
+  huart2.Init.WordLength = UART_WORDLENGTH_8B;
+  huart2.Init.StopBits = UART_STOPBITS_1;
+  huart2.Init.Parity = UART_PARITY_NONE;
+  huart2.Init.Mode = UART_MODE_TX_RX;
+  huart2.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart2.Init.OverSampling = UART_OVERSAMPLING_16;
+  if (HAL_UART_Init(&huart2) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN USART2_Init 2 */
+
+  /* USER CODE END USART2_Init 2 */
 
 }
 
@@ -394,6 +537,7 @@ static void MX_USART1_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
   /* USER CODE BEGIN MX_GPIO_Init_1 */
 
   /* USER CODE END MX_GPIO_Init_1 */
@@ -401,6 +545,16 @@ static void MX_GPIO_Init(void)
   /* GPIO Ports Clock Enable */
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+
+  /*Configure GPIO pin Output Level */
+  HAL_GPIO_WritePin(GPIOA, GPIO_PIN_5, GPIO_PIN_RESET);
+
+  /*Configure GPIO pin : PA5 */
+  GPIO_InitStruct.Pin = GPIO_PIN_5;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+  HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
   /* USER CODE BEGIN MX_GPIO_Init_2 */
 
@@ -424,7 +578,7 @@ void StartDefaultTask(void *argument)
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    osDelay(10000);
   }
   /* USER CODE END 5 */
 }
@@ -440,10 +594,48 @@ void StartTask02(void *argument)
 {
   /* USER CODE BEGIN StartTask02 */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+	/* USER CODE BEGIN StartTask02 */
+	  uint8_t mpu_buf[14];
+
+	  // Note: You must initialize the MPU6050 and HMC5883L before the loop
+	  // (e.g., waking up the MPU6050 by writing 0x00 to register 0x6B)
+	  uint8_t wakeup = 0x00;
+	  HAL_I2C_Mem_Write(&hi2c1, MPU6050_ADDR, 0x6B, 1, &wakeup, 1, 100);
+	  osDelay(10);
+
+	  /* Infinite loop */
+	  for(;;)
+	  {
+	    // 1. Read MPU6050 (Accel & Gyro starting at register 0x3B)
+	    if (HAL_I2C_Mem_Read(&hi2c1, MPU6050_ADDR, 0x3B, 1, mpu_buf, 14, 100) == HAL_OK) {
+	        drone_data.accel_x = (mpu_buf[0] << 8) | mpu_buf[1];
+	        drone_data.accel_y = (mpu_buf[2] << 8) | mpu_buf[3];
+	        drone_data.accel_z = (mpu_buf[4] << 8) | mpu_buf[5];
+	        // mpu_buf[6] & [7] is temperature
+	        drone_data.gyro_x  = (mpu_buf[8] << 8) | mpu_buf[9];
+	        drone_data.gyro_y  = (mpu_buf[10] << 8) | mpu_buf[11];
+	        drone_data.gyro_z  = (mpu_buf[12] << 8) | mpu_buf[13];
+	    }
+
+	    // 2. Read HMC5883L (Magnetometer starting at register 0x03)
+	   // if (HAL_I2C_Mem_Read(&hi2c1, HMC5883L_ADDR, 0x03, 1, mag_buf, 6, 100) == HAL_OK) {
+	     //   drone_data.mag_x = (mag_buf[0] << 8) | mag_buf[1];
+	       // drone_data.mag_z = (mag_buf[2] << 8) | mag_buf[3]; // Note: HMC5883L order is X, Z, Y
+	        //drone_data.mag_y = (mag_buf[4] << 8) | mag_buf[5];
+	   // }
+
+	    // 3. Read Hall Effect Sensor (ADC)
+	   // HAL_ADC_Start(&hadc1);
+	    //if (HAL_ADC_PollForConversion(&hadc1, 10) == HAL_OK) {
+	       // drone_data.hall_value = HAL_ADC_GetValue(&hadc1);
+	    //}
+	    //HAL_ADC_Stop(&hadc1);
+
+	    // Run this thread at roughly 100Hz (10ms delay)
+	    osDelay(10);
+	    HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
+
+	  }
   /* USER CODE END StartTask02 */
 }
 
@@ -456,13 +648,26 @@ void StartTask02(void *argument)
 /* USER CODE END Header_StartTask03 */
 void StartTask03(void *argument)
 {
-  /* USER CODE BEGIN StartTask03 */
-  /* Infinite loop */
+  float dt = 0.01f; // 100Hz timing
+  float roll_to_send;
+
   for(;;)
   {
-    osDelay(1);
+    // Convert Raw Accel to Degrees
+    float accY = drone_data.accel_y / 16384.0f;
+    float accZ = drone_data.accel_z / 16384.0f;
+    float angle_acc = atan2(accY, accZ) * 57.295f;
+
+    float gyro_rate = drone_data.gyro_x / 131.0f;
+
+    // Run Kalman and capture the result
+    roll_to_send = updateKalman(angle_acc, gyro_rate, dt);
+
+    // PUSH to Queue: Send the float to Task 04
+    osMessageQueuePut(sensorDataHandle, &roll_to_send, 0, 10);
+
+    osDelay(10); // Maintain 100Hz frequency
   }
-  /* USER CODE END StartTask03 */
 }
 
 /* USER CODE BEGIN Header_StartTask04 */
@@ -475,10 +680,71 @@ void StartTask03(void *argument)
 void StartTask04(void *argument)
 {
   /* USER CODE BEGIN StartTask04 */
+
+  // 1. Initialize PID variables
+  float integral = 0.0f;
+  float last_error = 0.0f;
+  float error = 0.0f;
+  float derivative = 0.0f;
+  float pid_out = 0.0f;
+
+  // PID Constants - These are starting points, you will likely need to tune them!
+  float kp = 1.25f;
+  float ki = 0.02f;
+  float kd = 0.45f;
+
+  // Base throttle for hovering (1000 is idle, 2000 is full power)
+  // Warning: Start low (e.g., 1200) for safety during testing!
+  uint16_t base_hover_throttle = 1450;
+
+  // 2. Start all 4 PWM Channels on Timer 3
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_1);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_2);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_3);
+  HAL_TIM_PWM_Start(&htim3, TIM_CHANNEL_4);
+
   /* Infinite loop */
   for(;;)
   {
-    osDelay(1);
+    // 3. Calculate PID Error (Target is 0.0 degrees for level hover)
+    // We use the global 'kalman_angle' updated by Task 03
+    error = 0.0f - kalman_angle;
+
+    // 4. Integral calculation with 'Anti-Windup' clamp
+    integral += error * 0.01f; // 0.01f because task runs at 100Hz (10ms)
+    if(integral > 400.0f)  integral = 400.0f;
+    if(integral < -400.0f) integral = -400.0f;
+
+    // 5. Derivative calculation
+    derivative = (error - last_error) / 0.01f;
+
+    // 6. Compute total PID output
+    pid_out = (kp * error) + (ki * integral) + (kd * derivative);
+    last_error = error;
+
+    // 7. Motor Mixing Logic (X-Configuration)
+    // m1: Front-Right, m2: Front-Left, m3: Rear-Left, m4: Rear-Right
+    // This logic assumes pid_out is correcting for ROLL.
+    int16_t m1 = (int16_t)(base_hover_throttle + pid_out);
+    int16_t m2 = (int16_t)(base_hover_throttle - pid_out);
+    int16_t m3 = (int16_t)(base_hover_throttle - pid_out);
+    int16_t m4 = (int16_t)(base_hover_throttle + pid_out);
+
+    // 8. Final Safety Clamps (Crucial!)
+    // Ensures we stay within the standard ESC range of 1ms to 2ms
+    if(m1 > 2000) m1 = 2000; if(m1 < 1000) m1 = 1000;
+    if(m2 > 2000) m2 = 2000; if(m2 < 1000) m2 = 1000;
+    if(m3 > 2000) m3 = 2000; if(m3 < 1000) m3 = 1000;
+    if(m4 > 2000) m4 = 2000; if(m4 < 1000) m4 = 1000;
+
+    // 9. Update the Hardware Timer Registers
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_1, m1);
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_2, m2);
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_3, m3);
+    __HAL_TIM_SET_COMPARE(&htim3, TIM_CHANNEL_4, m4);
+
+    // 10. Loop timing (100Hz)
+    osDelay(10);
   }
   /* USER CODE END StartTask04 */
 }
@@ -494,10 +760,30 @@ void StartTask05(void *argument)
 {
   /* USER CODE BEGIN StartTask05 */
   /* Infinite loop */
-  for(;;)
-  {
-    osDelay(1);
-  }
+
+	  /* USER CODE BEGIN StartTask05 */
+
+	  // Create a buffer to hold the formatted string
+	  char tx_buffer[128];
+
+	  /* Infinite loop */
+	  for(;;)
+	  {
+	    // 1. Format the data into a CSV string
+	    // Format: AccelX,AccelY,AccelZ,GyroX,GyroY,GyroZ,MagX,MagY,MagZ,Hall,Lat,Lon
+	    snprintf(tx_buffer, sizeof(tx_buffer),
+	             "%d,%d,%d,%d,%d,%d\r\n",
+	             drone_data.accel_x, drone_data.accel_y, drone_data.accel_z,
+	             drone_data.gyro_x, drone_data.gyro_y, drone_data.gyro_z);
+
+
+	    // 2. Transmit the formatted string over UART1
+	    HAL_UART_Transmit(&huart2, (uint8_t*)tx_buffer, strlen(tx_buffer), HAL_MAX_DELAY);
+
+	    // 3. Wait before sending the next packet.
+	    // 20ms delay gives roughly a 50Hz update rate, which is good for simulation.
+	    osDelay(20);
+	  }
   /* USER CODE END StartTask05 */
 }
 
@@ -517,6 +803,28 @@ void StartTask06(void *argument)
     osDelay(1);
   }
   /* USER CODE END StartTask06 */
+}
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM2 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM2)
+  {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
 }
 
 /**

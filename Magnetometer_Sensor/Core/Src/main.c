@@ -108,6 +108,7 @@ int main(void)
   while (1)
   {
     /* USER CODE END WHILE */
+	  int16_t mx, my, mz;
 	  HMC5883L_Read(&hi2c1, &mx, &my, &mz);
       snprintf(uart_buf, sizeof(uart_buf), "X: %d Y: %d Z: %d\r\n", mx, my, mz);
       HAL_UART_Transmit(&huart1, (uint8_t*)uart_buf, strlen(uart_buf), HAL_MAX_DELAY);
