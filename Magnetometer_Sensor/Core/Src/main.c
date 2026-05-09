@@ -102,12 +102,7 @@ int main(void)
   /* USER CODE BEGIN 2 */
   HMC5883L_Init(&hi2c1);
 
-  for(uint16_t i=0; i<128; i++) {
-      if(HAL_I2C_IsDeviceReady(&hi2c1, (uint16_t)(i<<1), 3, 5) == HAL_OK) {
-          snprintf(uart_buf, sizeof(uart_buf), "Device found at 0x%02X\r\n", i);
-          HAL_UART_Transmit(&huart1, (uint8_t*)uart_buf, strlen(uart_buf), 100);
-      }
-  }
+
   /* USER CODE END 2 */
 
   /* Infinite loop */

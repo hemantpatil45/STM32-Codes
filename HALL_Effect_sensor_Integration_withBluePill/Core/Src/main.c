@@ -100,24 +100,20 @@ int main(void)
   HAL_ADC_Start(&hadc1);
   /* USER CODE END 2 */
 
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
     /* USER CODE END WHILE */
 
-	  const char* status_string;
+
     /* USER CODE BEGIN 3 */
 	  HAL_ADC_PollForConversion(&hadc1,HAL_MAX_DELAY);
 	  	  adc_val=HAL_ADC_GetValue(&hadc1);
 	  	  float voltage=(adc_val*3.3f)/4095.0f;
-	  	  if (voltage <= 3.0){
-	  		  status_string ="magnetic field   detected";
-	  	  }
-	  	  else  {
-	  		  status_string="magnetic field not detected";
-	  	  }
-	  	snprintf(uart_buf, sizeof(uart_buf), "ADC:%u voltage:%.2f V | %s\r\n", adc_val, voltage, status_string);
+
+	  	snprintf(uart_buf, sizeof(uart_buf), "ADC:%u voltage:%.2f V |\r\n", adc_val, voltage);
 	  	HAL_UART_Transmit(&huart1,(uint8_t*)uart_buf,strlen(uart_buf),HAL_MAX_DELAY);
 	  	  HAL_Delay(500);
   }
